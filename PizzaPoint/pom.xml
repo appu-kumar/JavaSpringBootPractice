@@ -15,7 +15,6 @@
     </properties>
 
     <dependencies>
-        <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-context -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
