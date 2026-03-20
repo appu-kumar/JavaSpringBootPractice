@@ -4,6 +4,7 @@ import com.mycmny.todo.dto.request.CreateTodoRequest;
 import com.mycmny.todo.dto.request.UpdateTodoRequest;
 import com.mycmny.todo.dto.response.TodoResponse;
 import com.mycmny.todo.service.TodoService;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +16,19 @@ import java.util.List;
 public class TodoController {
 
     private final TodoService todoService;
+    private final ChatClient chatClient;
 
-    public TodoController(TodoService todoService) {
+
+    public TodoController(TodoService todoService, ChatClient.Builder builder) {
+
         this.todoService = todoService;
+        this.chatClient = builder.build();
     }
 
     // Create a todo → returns 201 Created
     @PostMapping
     public ResponseEntity<TodoResponse> createTodo(@RequestBody CreateTodoRequest todoRequest) {
+        System.out.println("appu is calling"+todoRequest.getText());
         TodoResponse createdTodo = todoService.createTodo(todoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTodo);
     }
@@ -52,5 +58,11 @@ public class TodoController {
     public ResponseEntity<TodoResponse> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoRequest updateTodoRequest){
         TodoResponse updatedTodo = this.todoService.updateTodo(id,updateTodoRequest);
         return ResponseEntity.ok(updatedTodo);
+    }
+
+
+    @GetMapping("/chat")
+    public String chat(@RequestParam String message){
+        return chatClient.prompt(message).call().content();
     }
 }
